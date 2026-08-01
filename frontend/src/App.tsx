@@ -1,8 +1,22 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Home from "./components/Home";
+import Login from "./components/Login";
+// import Register from "./components/Register";
+// import MovieDetails from "./components/MovieDetails";
+// import Favorites from "./components/Favorites";
 
 const App = () => {
   return (
-    <div>App</div>
-  )
-}
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Login />} />
 
-export default App
+        {/* <Route path="/register" element={<Register />} /> */}
+
+        <Route path="/home" element={<Home/>} />
+      </Routes>
+    </BrowserRouter>
+  );
+};
+
+export default App;

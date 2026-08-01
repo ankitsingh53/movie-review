@@ -4,12 +4,15 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from "typeorm";
+import { Review } from "./review.js";
+import { Favorite } from "./favorite.js";
 
-@Entity("users")
+@Entity({ name: "users" })
 export class User {
   @PrimaryGeneratedColumn()
-  id!: number;
+  id!: string;
 
   @Column({
     type: "varchar",
@@ -23,8 +26,16 @@ export class User {
   })
   email!: string;
 
-  @Column({type: "varchar"})
+  @Column({
+    type: "varchar",
+  })
   password!: string;
+
+  @OneToMany(()=>Review, (review)=>review.user)
+  reviews!: Review[];
+
+  @OneToMany(()=>Favorite, (favorite)=>favorite.user)
+  favorites!: Favorite[];
 
   @CreateDateColumn()
   createdAt!: Date;
