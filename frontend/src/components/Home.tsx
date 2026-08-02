@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Navbar from "./NavBar";
 import MovieCard from "./MovieCard";
 import api from "../axios/apiService";
+import SearchBar from "./SearchBar";
 
 interface Movie {
   id: number;
@@ -38,10 +39,7 @@ const Home = () => {
 
   return (
     <>
-      <Navbar
-        setSearchResults={setSearchResults}
-        setIsSearching={setIsSearching}
-      />
+      <Navbar/>
 
       <Box
         sx={{
@@ -50,6 +48,10 @@ const Home = () => {
           p: 4,
         }}
       >
+        <SearchBar 
+        setSearchResults={setSearchResults}
+        setIsSearching={setIsSearching}
+        />
         <Typography
           variant="h4"
           sx={{
@@ -85,7 +87,6 @@ const Home = () => {
                 id={movie.id}
                 title={movie.title}
                 posterPath={movie.poster_path}
-                rating={movie.vote_average}
                 releaseDate={movie.release_date}
               />
             ))}

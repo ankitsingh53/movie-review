@@ -2,7 +2,7 @@ import {
   Box,
   Button,
   Divider,
-  Rating,
+  Paper,
   Stack,
   Typography,
 } from "@mui/material";
@@ -11,12 +11,24 @@ import Navbar from "./NavBar";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import api from "../axios/apiService";
-// import ReviewCard from "./ReviewCard";
-// import ReviewForm from "./ReviewForm";
+import ReviewForm from "./ReviewForm";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { IconButton } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import TextField from "@mui/material/TextField";
 
 interface Genre {
   id: number;
   name: string;
+}
+
+interface Review {
+  id: number;
+  comment: string;
+  user: {
+    id: string;
+    name: string;
+  };
 }
 
 interface Movie {
@@ -31,24 +43,76 @@ interface Movie {
 }
 
 const MovieDetails = () => {
-    const {id} = useParams();
-    const [movie, setMovie] = useState<Movie | null>(null)
+  const { id } = useParams();
+  const [movie, setMovie] = useState<Movie | null>(null);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [editingReviewId, setEditingReviewId] = useState<number | null>(null);
+  const [editComment, setEditComment] = useState("");
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
-    useEffect(()=>{
-        const fetchMovie = async ()=>{
-            try {
-                const response = await api.get(`movies/${id}`);
-                setMovie(response.data)
-            } catch (error) {
-                console.error(error);
-            }
-        };
-        fetchMovie();
-    }, [id])
+  useEffect(() => {
+    const fetchUser = async () => {
+      const response = await api.get("/user/profile");
+      setCurrentUser(response.data.data);
+    };
+
+    fetchUser();
+  }, []);
+
+  const handleDelete = async (reviewId: number) => {
+    try {
+      await api.delete(`/reviews/${reviewId}`);
+      fetchReviews();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleUpdate = async () => {
+    try {
+      await api.put(`/reviews/${editingReviewId}`, {
+        comment: editComment,
+      });
+
+      setEditingReviewId(null);
+      fetchReviews();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchReviews = async () => {
+    try {
+      const response = await api.get(`/reviews/${id}`);
+      console.log(response.data.data);
+      setReviews(response.data.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchMovie = async () => {
+      try {
+        const response = await api.get(`movies/${id}`);
+        setMovie(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchMovie();
+  }, [id]);
+  useEffect(() => {
+    if (id) {
+      fetchReviews();
+    }
+  }, [id]);
+
+  console.log(currentUser)
 
   return (
     <>
-      <Navbar />
+      <Navbar/>
 
       <Box
         sx={{
@@ -58,10 +122,7 @@ const MovieDetails = () => {
           p: 4,
         }}
       >
-        <Stack
-          direction={{ xs: "column", md: "row" }}
-          spacing={5}
-        >
+        <Stack direction={{ xs: "column", md: "row" }} spacing={5}>
           <Box
             component="img"
             src={`https://image.tmdb.org/t/p/w500${movie?.poster_path}`}
@@ -73,11 +134,7 @@ const MovieDetails = () => {
           />
 
           <Box sx={{ flex: 1 }}>
-            <Typography
-              variant="h3"
-              fontWeight="bold"
-              gutterBottom
-            >
+            <Typography variant="h3" sx={{ fontWeight: "bold" }} gutterBottom>
               {movie?.title}
             </Typography>
 
@@ -89,15 +146,6 @@ const MovieDetails = () => {
                 mb: 2,
               }}
             >
-              <Rating
-                value={movie?.vote_average / 2}
-                precision={0.5}
-                readOnly
-              />
-
-              <Typography>
-                {movie?.vote_average?.toFixed(1)}
-              </Typography>
             </Box>
 
             <Typography sx={{ mb: 1 }}>
@@ -109,12 +157,11 @@ const MovieDetails = () => {
             </Typography>
 
             <Typography sx={{ mb: 2 }}>
-              <strong>Genres:</strong> {movie?.genres?.map((genre: any) => genre.name).join(", ")}
+              <strong>Genres:</strong>{" "}
+              {movie?.genres?.map((genre: any) => genre.name).join(", ")}
             </Typography>
 
-            <Typography sx={{ mb: 4 }}>
-              {movie?.overview}
-            </Typography>
+            <Typography sx={{ mb: 4 }}>{movie?.overview}</Typography>
 
             <Button
               variant="contained"
@@ -133,16 +180,76 @@ const MovieDetails = () => {
           }}
         />
 
-        <Typography
-          variant="h4"
-          mb={3}
-        >
+        <Typography variant="h4" sx={{ mb: 3 }}>
           Reviews
         </Typography>
 
-        {/* <ReviewCard /> */}
+        {Array.isArray(reviews) && reviews.length > 0 ? (
+          reviews.map((review) => (
+            <Paper
+              key={review.id}
+              sx={{
+                bgcolor: "#1E1E1E",
+                color: "white",
+                p: 3,
+                mb: 2,
+              }}
+            >
+              <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                {review.user.name}
+              </Typography>
 
-        {/* <ReviewCard /> */}
+              {editingReviewId === review.id ? (
+                <>
+                  <TextField
+                    fullWidth
+                    value={editComment}
+                    onChange={(e) => setEditComment(e.target.value)}
+                    sx={{
+                      bgcolor: "white",
+                      my: 2,
+                    }}
+                  />
+
+                  <Button variant="contained" onClick={handleUpdate}>
+                    Save
+                  </Button>
+                </>
+              ) : (
+                  <Typography>{review.comment}</Typography>
+              )}
+
+              
+
+              {currentUser?.id === review.user.id && (
+                <Box>
+              <IconButton color="error" onClick={() => handleDelete(review.id)}>
+                <DeleteIcon />
+              </IconButton>
+              <IconButton
+                color="primary"
+                onClick={() => {
+                  setEditingReviewId(review.id);
+                  setEditComment(review.comment);
+                }}
+              >
+                <EditIcon />
+              </IconButton>
+              </Box>
+              )}
+            </Paper>
+          ))
+        ) : (
+          <Typography
+            sx={{
+              color: "#B0B0B0",
+              textAlign: "center",
+              mt: 2,
+            }}
+          >
+            No reviews yet. Be the first to review this movie!
+          </Typography>
+        )}
 
         <Divider
           sx={{
@@ -151,14 +258,11 @@ const MovieDetails = () => {
           }}
         />
 
-        <Typography
-          variant="h4"
-          mb={3}
-        >
+        <Typography variant="h4" sx={{ mb: 3 }}>
           Write a Review
         </Typography>
 
-        {/* <ReviewForm /> */}
+        <ReviewForm movieId={Number(id)} onReviewAdded={fetchReviews} />
       </Box>
     </>
   );

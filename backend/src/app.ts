@@ -3,6 +3,7 @@ import cors from "cors";
 import authRoute from "./routes/authRoute.js";
 import cookieParser from "cookie-parser";
 import movieRoutes from "./routes/movieRoute.js";
+import reviewRoutes from "./routes/reviewRoute.js"
 
 const app = express();
 
@@ -19,5 +20,6 @@ app.use(cookieParser());
 
 app.use('/user', authRoute);
 app.use('/movies', movieRoutes)
+app.use("/reviews", reviewRoutes)
 
 export default app;

@@ -40,8 +40,8 @@ export const searchMovies = async (
 ) => {
   try {
     const { query } = req.query;
-    console.log("Search Controller Hit");
-console.log(req.query);
+    // console.log("Search Controller Hit");
+     // console.log(req.query);
 
     if (!query || typeof query !== "string") {
       res.status(400).json({
@@ -50,12 +50,17 @@ console.log(req.query);
       return;
     }
 
-    const response = await tmdb.get("/search/movie", {
-      params: {
-        query,
-      },
-    });
-
+    // const response = await tmdb.get("/search/movie", {
+    //   params: {
+    //     query,
+    //   },
+    // });
+    const response = await tmdb.get(`/search/movie?query=${query}`);
+    if(response.data.results.length<0){
+      res.status(400).json({
+        message: "No result Found"
+      })
+    }
     res.status(200).json({
       data: response.data.results,
     });

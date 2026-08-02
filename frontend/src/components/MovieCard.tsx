@@ -5,7 +5,6 @@ import {
   CardContent,
   CardMedia,
   IconButton,
-  Rating,
   Typography,
 } from "@mui/material";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -15,7 +14,6 @@ interface MovieCardProps {
   id: number;
   title: string;
   posterPath: string;
-  rating: number;
   releaseDate: string;
   onFavorite?: (id: number) => void;
 }
@@ -24,7 +22,6 @@ const MovieCard = ({
   id,
   title,
   posterPath,
-  rating,
   releaseDate,
   onFavorite,
 }: MovieCardProps) => {
@@ -66,7 +63,7 @@ const MovieCard = ({
           {title}
         </Typography>
 
-        <Box
+        {/* <Box
           sx={{
             display: "flex",
             alignItems: "center",
@@ -84,7 +81,7 @@ const MovieCard = ({
           <Typography variant="body2">
             {rating.toFixed(1)}
           </Typography>
-        </Box>
+        </Box> */}
 
         <Typography
           variant="body2"

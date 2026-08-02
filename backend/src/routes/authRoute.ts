@@ -1,8 +1,11 @@
 import { Router } from "express";
 
-import { register, login, logout } from '../controllers/authController.js'
+import { register, login, logout, getCurrentUser } from '../controllers/authController.js'
+import { authenticate } from "../middlewares/authMiddleware.js";
 
 const router = Router();
+
+router.get("/profile", authenticate, getCurrentUser)
 
 router.post("/register", register);
 

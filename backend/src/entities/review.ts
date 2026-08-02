@@ -13,17 +13,12 @@ import { User } from "./users.js";
 @Entity({ name: "reviews" })
 export class Review {
   @PrimaryGeneratedColumn()
-  id!: string;
+  id!: number;
 
   @Column({
     type: "int",
   })
   movieId!: number;
-
-  @Column({
-    type: "int",
-  })
-  rating!: number;
 
   @Column({
     type: "text",

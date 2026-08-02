@@ -5,6 +5,8 @@ import MovieDetails from "./components/MovieDetails";
 import Register from "./components/Register";
 import { ToastContainer } from "react-toastify";
 import ForgotPassword from "./components/ForgotPassword";
+import Favorites from "./components/Favorites";
+
 // import MovieDetails from "./components/MovieDetails";
 // import Favorites from "./components/Favorites";
 
@@ -18,6 +20,8 @@ const App = () => {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/home" element={<Home/>} />
         <Route path="/movie/:id" element={<MovieDetails />} />
+        <Route path="/favorites" element={<Favorites/>} />
+
       </Routes>
     </BrowserRouter>
   );

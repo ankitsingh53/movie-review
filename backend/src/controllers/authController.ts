@@ -6,6 +6,13 @@ import {
 } from "../services/userService.js";
 import { comparePassword, hashPassword } from "../utils/bcrypt.js";
 import { generateToken } from "../utils/jwt.js";
+import type { AuthRequest } from "../types/authRequest.js";
+
+export const getCurrentUser = (req: AuthRequest, res: Response) => {
+  res.status(200).json({
+    data: req.user,
+  });
+};
 
 export const register = async (req: Request, res: Response) => {
   try {
