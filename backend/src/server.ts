@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import app from "./app.js";
 
 dotenv.config();
+console.log("TMDB_KEY:", process.env.TMDB_KEY);
 
 const startserver = async ()=>{
     try {

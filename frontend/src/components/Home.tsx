@@ -14,31 +14,34 @@ interface Movie {
 
 const Home = () => {
   const [movies, setMovies] = useState<Movie[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [searchResults, setSearchResults] = useState<Movie[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
 
-  
-useEffect(() => {
-  const fetchMovies = async () => {
-    try {
-      setLoading(true);
+  useEffect(() => {
+    const fetchMovies = async () => {
+      try {
+        setLoading(true);
 
-      const response = await api.get("/movie/popular");
+        const response = await api.get("/movies/popular");
 
-      setMovies(response.data);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+        setMovies(response.data.results);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  fetchMovies();
-}, []);
+    fetchMovies();
+  }, []);
 
   return (
     <>
-      <Navbar />
-      
+      <Navbar
+        setSearchResults={setSearchResults}
+        setIsSearching={setIsSearching}
+      />
 
       <Box
         sx={{
@@ -55,7 +58,7 @@ useEffect(() => {
             mb: 4,
           }}
         >
-          Popular Movies
+          {isSearching ? "Search Results" : "Popular Movies"}
         </Typography>
 
         {loading ? (
@@ -76,7 +79,7 @@ useEffect(() => {
               gap: 4,
             }}
           >
-            {movies.map((movie) => (
+            {(isSearching ? searchResults : movies).map((movie) => (
               <MovieCard
                 key={movie.id}
                 id={movie.id}
@@ -84,7 +87,6 @@ useEffect(() => {
                 posterPath={movie.poster_path}
                 rating={movie.vote_average}
                 releaseDate={movie.release_date}
-                // onFavorite={handleFavorite}
               />
             ))}
           </Box>

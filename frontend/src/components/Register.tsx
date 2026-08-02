@@ -1,221 +1,305 @@
-// import {
-//   Box,
-//   Button,
-//   CircularProgress,
-//   Paper,
-//   TextField,
-//   Typography,
-// } from "@mui/material";
-// import { Link, useNavigate } from "react-router-dom";
-// import { useState } from "react";
-// // import { registerUser } from "../services/authApi";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { Box, Button, Paper, TextField, Typography, Link, InputAdornment, IconButton } from "@mui/material";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../axios/apiService";
+import { toast } from "react-toastify";
 
-// const Register = () => {
-//   const navigate = useNavigate();
+type FormData = {
+  name: string;
+  email: string;
+  password: string;
+};
 
-//   const [formData, setFormData] = useState({
-//     name: "",
-//     email: "",
-//     password: "",
-//   });
+interface FormErrors {
+  name?: string,
+  email?: string;
+  password?: string;
+}
 
-//   const [loading, setLoading] = useState(false);
+const Register = () => {
+  const navigate = useNavigate();
+    const [formData, setFormData] = useState<FormData>({
+    name: "",
+    email: "",
+    password: "",
+  });
+   const [showCurrent, setShowCurrent] = useState(false);
+   const [errors, setErrors] = useState<FormErrors>({})
 
-//   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     setFormData({
-//       ...formData,
-//       [e.target.name]: e.target.value,
-//     });
-//   };
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>)=>{
+    setFormData({...formData, [e.target.name]: e.target.value})
+    setErrors({ ...errors, [e.target.name]: "" });
+  }
 
-//   const handleRegister = async (e: React.FormEvent) => {
-//     e.preventDefault();
+  const customeValidate = () => {
+    const formErrors: FormErrors = {};
+    let isValid = true;
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{3,}$/;
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{4,}$/;
+    const stringPattern = /^[A-Za-z\s'-]+$/;
 
-//     try {
-//       setLoading(true);
+    if (!formData.name.trim() || !formData.name ) {
+      formErrors.name = "Name is required";
+      isValid = false;
+    } else if (!stringPattern.test(formData.name)) {
+      formErrors.name = "Only Characters are allowed";
+      isValid = false;
+    }else if (formData.name.length<3) {
+      formErrors.name = "Name cannot be less than 3 characters";
+      isValid = false;
+    }
+    if (!formData.email.trim() || !formData.email ) {
+      formErrors.email = "Email is mandatory";
+      isValid = false;
+    } else if (!emailRegex.test(formData.email)) {
+      formErrors.email = "Enter valid email address and must include @";
+      isValid = false;
+    }
+    if (!formData.password.trim() || !formData.password ) {
+      formErrors.password = "Password is mandatory";
+      isValid = false;
+    } else if (!passwordRegex.test(formData.password)) {
+      formErrors.password =
+        "Password must be minimum 4 characters, one letter & one digit";
+      isValid = false;
+    }
+    setErrors(formErrors);
+    return isValid;
+  };
 
-//       const response = await registerUser(formData);
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>)=>{
+    e.preventDefault();
+    const valid = customeValidate();
+    if(!valid) return;
+    try {
+         await api.post('/user/register', formData);
+        // console.log(getData);
 
-//       alert(response.message);
+        setFormData({
+          name: "",
+          email: "",
+          password: "",
+        });
+        navigate('/')
+        toast.success("Registered Successfully", {
+          autoClose: 2000,
+        });
+    } catch (error) {
+        if(error instanceof Error){
+          toast.error(`${error.message}`, {
+          autoClose: 2000,
+        });
+        }
+    }
+  }
+  return (
+    <Box
+      sx={{
+        bgcolor: "#1E1E1E",
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        p: 3,
+      }}
+    >
+      <Paper
+        elevation={5}
+        sx={{
+          width: 450,
+          bgcolor: "#1E1E1E",
+          p: 4,
+          borderRadius: 3,
+        }}
+      >
+        <Box component="form" noValidate autoComplete="On" onSubmit={handleSubmit}>
+          <Typography
+            sx={{
+              fontSize: 45,
+              textAlign: "center",
+              mb: 1,
+            }}
+          >
+            🎬
+          </Typography>
 
-//       navigate("/");
-//     } catch (error: any) {
-//       alert(error?.response?.data?.message || "Registration Failed");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
+          <Typography
+            variant="h4"
+            sx={{
+              color: "white",
+              fontWeight: "bold",
+              textAlign: "center",
+            }}
+          >
+            Movie Review
+          </Typography>
 
-//   return (
-//     <Box
-//       sx={{
-//         minHeight: "100vh",
-//         bgcolor: "#121212",
-//         display: "flex",
-//         justifyContent: "center",
-//         alignItems: "center",
-//       }}
-//     >
-//       <Paper
-//         elevation={8}
-//         sx={{
-//           width: 420,
-//           p: 4,
-//           bgcolor: "#1E1E1E",
-//           borderRadius: 2,
-//         }}
-//       >
-//         <Typography
-//           variant="h4"
-//           textAlign="center"
-//           color="white"
-//           fontWeight="bold"
-//           mb={1}
-//         >
-//           🎬 Movie Review
-//         </Typography>
+          <Typography
+            sx={{
+              color: "gray",
+              textAlign: "center",
+              mb: 4,
+            }}
+          >
+            Create your account to continue.
+          </Typography>
 
-//         <Typography
-//           variant="h6"
-//           textAlign="center"
-//           color="white"
-//           mb={3}
-//         >
-//           Create Account
-//         </Typography>
+          <Typography
+            sx={{
+              color: "white",
+              mb: 1,
+            }}
+          >
+            Full Name
+          </Typography>
 
-//         <Box
-//           component="form"
-//           onSubmit={handleRegister}
-//         >
-//           <TextField
-//             fullWidth
-//             label="Name"
-//             name="name"
-//             margin="normal"
-//             value={formData.name}
-//             onChange={handleChange}
-//             InputLabelProps={{
-//               sx: { color: "#BDBDBD" },
-//             }}
-//             InputProps={{
-//               sx: {
-//                 color: "white",
-//               },
-//             }}
-//             sx={{
-//               "& .MuiOutlinedInput-root": {
-//                 "& fieldset": {
-//                   borderColor: "#555",
-//                 },
-//                 "&:hover fieldset": {
-//                   borderColor: "#1976d2",
-//                 },
-//                 "&.Mui-focused fieldset": {
-//                   borderColor: "#1976d2",
-//                 },
-//               },
-//             }}
-//           />
+          <TextField
+            fullWidth
+            placeholder="Enter your fullname"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            autoComplete="on"
+            sx={{
+              mb: 3,
+              bgcolor: "#ececec",
+              borderRadius: 1,
+            }}
+          />
 
-//           <TextField
-//             fullWidth
-//             label="Email"
-//             name="email"
-//             margin="normal"
-//             value={formData.email}
-//             onChange={handleChange}
-//             InputLabelProps={{
-//               sx: { color: "#BDBDBD" },
-//             }}
-//             InputProps={{
-//               sx: {
-//                 color: "white",
-//               },
-//             }}
-//             sx={{
-//               "& .MuiOutlinedInput-root": {
-//                 "& fieldset": {
-//                   borderColor: "#555",
-//                 },
-//                 "&:hover fieldset": {
-//                   borderColor: "#1976d2",
-//                 },
-//                 "&.Mui-focused fieldset": {
-//                   borderColor: "#1976d2",
-//                 },
-//               },
-//             }}
-//           />
+          {errors && (
+              <Typography
+                variant="overline"
+                gutterBottom
+                sx={{ display: "block", color: "#FF6B6B" }}
+              >
+                {errors.name}
+              </Typography>
+            )}
 
-//           <TextField
-//             fullWidth
-//             type="password"
-//             label="Password"
-//             name="password"
-//             margin="normal"
-//             value={formData.password}
-//             onChange={handleChange}
-//             InputLabelProps={{
-//               sx: { color: "#BDBDBD" },
-//             }}
-//             InputProps={{
-//               sx: {
-//                 color: "white",
-//               },
-//             }}
-//             sx={{
-//               "& .MuiOutlinedInput-root": {
-//                 "& fieldset": {
-//                   borderColor: "#555",
-//                 },
-//                 "&:hover fieldset": {
-//                   borderColor: "#1976d2",
-//                 },
-//                 "&.Mui-focused fieldset": {
-//                   borderColor: "#1976d2",
-//                 },
-//               },
-//             }}
-//           />
+          <Typography
+            sx={{
+              color: "white",
+              mb: 1,
+            }}
+          >
+            Email
+          </Typography>
 
-//           <Button
-//             fullWidth
-//             variant="contained"
-//             type="submit"
-//             sx={{
-//               mt: 3,
-//               height: 45,
-//             }}
-//             disabled={loading}
-//           >
-//             {loading ? (
-//               <CircularProgress
-//                 size={22}
-//                 color="inherit"
-//               />
-//             ) : (
-//               "Register"
-//             )}
-//           </Button>
-//         </Box>
+          <TextField
+            fullWidth
+            placeholder="Enter your email"
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            sx={{
+              mb: 3,
+              bgcolor: "#ececec",
+              borderRadius: 1,
+            }}
+          />
+          {errors && (
+              <Typography
+                variant="overline"
+                gutterBottom
+                sx={{ display: "block", color: "#FF6B6B"  }}
+              >
+                {errors.email}
+              </Typography>
+            )}
 
-//         <Typography
-//           textAlign="center"
-//           color="white"
-//           mt={3}
-//         >
-//           Already have an account?
-//           <Button
-//             component={Link}
-//             to="/"
-//           >
-//             Login
-//           </Button>
-//         </Typography>
-//       </Paper>
-//     </Box>
-//   );
-// };
+          <Typography
+            sx={{
+              color: "white",
+              mb: 1,
+            }}
+          >
+            Password
+          </Typography>
 
-// export default Register;
+          <TextField
+              fullWidth
+              type={showCurrent ? "text" : "password"}
+              margin="normal"
+              name="password"
+              onChange={handleChange}
+              value={formData.password}
+              autoComplete="on"
+              placeholder="Enter your password"
+              sx={{
+              mb: 3,
+              bgcolor: "#ececec",
+              borderRadius: 1,
+            }}
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => setShowCurrent(!showCurrent)}
+                        edge="end"
+                      >
+                        {showCurrent ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                },
+              }}
+            />
+            {errors && (
+              <Typography
+                variant="overline"
+                gutterBottom
+                sx={{ display: "block", color: "#FF6B6B"  }}
+              >
+                {errors.password}
+              </Typography>
+            )}
+
+          <Button
+            fullWidth
+            variant="contained"
+            size="large"
+            type="submit"
+            sx={{
+              py: 1.5,
+              fontWeight: "bold",
+              borderRadius: 2,
+              marginTop: '40px'
+            }}
+          >
+            Register
+          </Button>
+        </Box>
+
+        <Typography
+          sx={{
+            textAlign: "center",
+            mt: 3,
+            color: 'white'
+          }}
+        >
+          Already have an account?{" "}
+          <Link component="button" onClick={() => navigate("/")}>
+            Login
+          </Link>
+        </Typography>
+
+        <Typography
+          sx={{
+            color: "gray",
+            textAlign: "center",
+            mt: 4,
+            fontSize: 14,
+          }}
+        >
+          © 2026 Movie Review Application
+        </Typography>
+      </Paper>
+    </Box>
+  );
+};
+
+export default Register;

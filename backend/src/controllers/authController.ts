@@ -1,5 +1,9 @@
 import type { Request, Response } from "express";
-import { existingUser, registerUser } from "../services/userService.js";
+import {
+  existingUser,
+  registerUser,
+  savePassword,
+} from "../services/userService.js";
 import { comparePassword, hashPassword } from "../utils/bcrypt.js";
 import { generateToken } from "../utils/jwt.js";
 
@@ -115,7 +119,7 @@ export const login = async (req: Request, res: Response) => {
         id: user.id,
         name: user.name,
         email: user.email,
-    },
+      },
     });
   } catch (error) {
     return res.status(500).json({
@@ -124,10 +128,52 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
-export const logout = async (req: Request, res: Response)=>{
-    res.clearCookie("token", {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'strict',
-    }).json({message: "Logout successfully"});
-}
+export const logout = async (req: Request, res: Response) => {
+  res
+    .clearCookie("token", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+    })
+    .json({ message: "Logout successfully" });
+};
+
+export const forgotPassword = async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{3,}$/;
+  if (!email || !email.trim()) {
+    return res.status(400).json({ message: "Email is required" });
+  } else if (!emailRegex.test(email)) {
+    return res
+      .status(400)
+      .json({ message: "Enter valid email and must include '@'." });
+  }
+
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{4,}$/;
+  if (!password || !password.trim()) {
+    return res.status(400).json({ message: "Password is required" });
+  } else if (!passwordRegex.test(password)) {
+    return res.status(400).json({
+      message: "Password must be minimum 4 characters, one letter & one digit",
+    });
+  }
+  try {
+    const getUser = await existingUser(email);
+    if (!getUser) {
+      return res.status(401).json({
+        message: "Invalid email or password",
+      });
+    }
+    const hashpass = await hashPassword(password);
+
+    const data = savePassword(getUser.email, hashpass);
+
+    return res.status(200).json({
+      message: "Password Changed Successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal Server Error",
+    });
+  }
+};

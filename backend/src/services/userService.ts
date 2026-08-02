@@ -37,3 +37,17 @@ export const loginUser = async (email: string) => {
 
   return user;
 };
+
+export const savePassword = async (email: string, password: string) => {
+  const user = await userRepo.findOne({
+    where: {
+      email,
+    },
+  });
+
+  if (user) {
+    user.password = password;
+    await userRepo.save(user);
+  }
+  return user
+};
