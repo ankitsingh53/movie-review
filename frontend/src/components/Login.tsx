@@ -210,7 +210,7 @@ const Register = () => {
               </Typography>
             )}
 
-            <Box
+            {/* <Box
               sx={{
                 display: "flex",
                 justifyContent: "space-between",
@@ -232,7 +232,7 @@ const Register = () => {
               >
                 Forgot Password?
               </Link>
-            </Box>
+            </Box> */}
 
           <Button
             fullWidth
@@ -249,6 +249,19 @@ const Register = () => {
             Login
           </Button>
         </Box>
+
+        <Typography
+          sx={{
+            textAlign: "center",
+            mt: 3,
+            color: 'white'
+          }}
+        >
+          New User ! {" "}
+          <Link component="button" onClick={() => navigate("/register")}>
+            Create an account.
+          </Link>
+        </Typography>
 
         <Typography
           sx={{

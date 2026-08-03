@@ -1,11 +1,4 @@
-import {
-  Box,
-  Button,
-  Divider,
-  Paper,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Divider, Paper, Stack, Typography } from "@mui/material";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import Navbar from "./NavBar";
 import { useParams } from "react-router-dom";
@@ -16,6 +9,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import TextField from "@mui/material/TextField";
+import { toast } from "react-toastify";
 
 interface Genre {
   id: number;
@@ -102,17 +96,28 @@ const MovieDetails = () => {
     };
     fetchMovie();
   }, [id]);
+  
   useEffect(() => {
     if (id) {
       fetchReviews();
     }
   }, [id]);
 
-  console.log(currentUser)
+  const handleAddFavorite = async () => {
+    try {
+      await api.post("/favorites", {
+        movieId: Number(id),
+      });
+
+      toast.success("Movie added to favorites");
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Something went wrong");
+    }
+  };
 
   return (
     <>
-      <Navbar/>
+      <Navbar />
 
       <Box
         sx={{
@@ -138,16 +143,6 @@ const MovieDetails = () => {
               {movie?.title}
             </Typography>
 
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 2,
-                mb: 2,
-              }}
-            >
-            </Box>
-
             <Typography sx={{ mb: 1 }}>
               <strong>Release Date:</strong> {movie?.release_date}
             </Typography>
@@ -167,6 +162,7 @@ const MovieDetails = () => {
               variant="contained"
               color="error"
               startIcon={<FavoriteBorderIcon />}
+              onClick={handleAddFavorite}
             >
               Add to Favorites
             </Button>
@@ -184,7 +180,7 @@ const MovieDetails = () => {
           Reviews
         </Typography>
 
-        {Array.isArray(reviews) && reviews.length > 0 ? (
+        {reviews.length > 0 ? (
           reviews.map((review) => (
             <Paper
               key={review.id}
@@ -216,26 +212,27 @@ const MovieDetails = () => {
                   </Button>
                 </>
               ) : (
-                  <Typography>{review.comment}</Typography>
+                <Typography>{review.comment}</Typography>
               )}
-
-              
 
               {currentUser?.id === review.user.id && (
                 <Box>
-              <IconButton color="error" onClick={() => handleDelete(review.id)}>
-                <DeleteIcon />
-              </IconButton>
-              <IconButton
-                color="primary"
-                onClick={() => {
-                  setEditingReviewId(review.id);
-                  setEditComment(review.comment);
-                }}
-              >
-                <EditIcon />
-              </IconButton>
-              </Box>
+                  <IconButton
+                    color="error"
+                    onClick={() => handleDelete(review.id)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                  <IconButton
+                    color="primary"
+                    onClick={() => {
+                      setEditingReviewId(review.id);
+                      setEditComment(review.comment);
+                    }}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                </Box>
               )}
             </Paper>
           ))

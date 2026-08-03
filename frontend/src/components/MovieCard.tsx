@@ -5,6 +5,7 @@ import {
   CardContent,
   CardMedia,
   IconButton,
+  Stack,
   Typography,
 } from "@mui/material";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -15,7 +16,7 @@ interface MovieCardProps {
   title: string;
   posterPath: string;
   releaseDate: string;
-  onFavorite?: (id: number) => void;
+  onAddFavorite?: (movieId: number) => void;
 }
 
 const MovieCard = ({
@@ -23,18 +24,14 @@ const MovieCard = ({
   title,
   posterPath,
   releaseDate,
-  onFavorite,
+  onAddFavorite,
 }: MovieCardProps) => {
   const navigate = useNavigate();
-
-  const imageUrl = posterPath
-    ? `https://image.tmdb.org/t/p/w500${posterPath}`
-    : "https://via.placeholder.com/500x750?text=No+Image";
 
   return (
     <Card
       sx={{
-        width: 260,
+        width: 300,
         bgcolor: "#1E1E1E",
         color: "white",
         borderRadius: 3,
@@ -44,13 +41,9 @@ const MovieCard = ({
           transform: "scale(1.03)",
         },
       }}
-    >
-      <CardMedia
-        component="img"
-        height="370"
-        image={imageUrl}
-        alt={title}
-      />
+    > 
+    <Stack>
+      <CardMedia  component="img" height="370" image={`https://image.tmdb.org/t/p/w500${posterPath}`} alt={title} />
 
       <CardContent>
         <Typography
@@ -63,26 +56,6 @@ const MovieCard = ({
           {title}
         </Typography>
 
-        {/* <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 1,
-            mb: 1,
-          }}
-        >
-          <Rating
-            value={rating / 2}
-            precision={0.5}
-            readOnly
-            size="small"
-          />
-
-          <Typography variant="body2">
-            {rating.toFixed(1)}
-          </Typography>
-        </Box> */}
-
         <Typography
           variant="body2"
           sx={{
@@ -90,33 +63,28 @@ const MovieCard = ({
             mb: 2,
           }}
         >
-          {releaseDate}
+         Released Date: {releaseDate}
         </Typography>
 
         <Box
           sx={{
             display: "flex",
             justifyContent: "space-between",
+            alignItems: 'center'
           }}
         >
-          <IconButton
-            color="error"
-            onClick={() => onFavorite?.(id)}
-          >
+          <IconButton color="error" onClick={() => onAddFavorite?.(id)}>
             <FavoriteBorderIcon />
           </IconButton>
 
-          <Button
-            variant="contained"
-            onClick={() => navigate(`/movie/${id}`)}
-          >
+          <Button variant="contained" onClick={() => navigate(`/movie/${id}`)}>
             Details
           </Button>
         </Box>
       </CardContent>
+      </Stack>
     </Card>
   );
 };
 
 export default MovieCard;
-

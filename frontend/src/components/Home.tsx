@@ -1,9 +1,11 @@
-import { Box, CircularProgress, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import Navbar from "./NavBar";
 import MovieCard from "./MovieCard";
 import api from "../axios/apiService";
 import SearchBar from "./SearchBar";
+import Loader from "./Loader";
+import { toast } from "react-toastify";
 
 interface Movie {
   id: number;
@@ -18,6 +20,7 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [searchResults, setSearchResults] = useState<Movie[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  
 
   useEffect(() => {
     const fetchMovies = async () => {
@@ -37,9 +40,21 @@ const Home = () => {
     fetchMovies();
   }, []);
 
+  const handleAddFavorite = async (movieId: number) => {
+  try {
+    await api.post("/favorites", {
+      movieId,
+    });
+
+    toast.success("Added to favorites");
+  } catch (error: any) {
+    toast.error(error.response?.data?.message);
+  }
+};
+
   return (
     <>
-      <Navbar/>
+      <Navbar />
 
       <Box
         sx={{
@@ -48,9 +63,9 @@ const Home = () => {
           p: 4,
         }}
       >
-        <SearchBar 
-        setSearchResults={setSearchResults}
-        setIsSearching={setIsSearching}
+        <SearchBar
+          setSearchResults={setSearchResults}
+          setIsSearching={setIsSearching}
         />
         <Typography
           variant="h4"
@@ -71,14 +86,15 @@ const Home = () => {
               mt: 10,
             }}
           >
-            <CircularProgress />
+            <Loader/>
           </Box>
         ) : (
           <Box
             sx={{
               display: "flex",
               flexWrap: "wrap",
-              gap: 4,
+              justifyContent: "center",
+              gap: 10
             }}
           >
             {(isSearching ? searchResults : movies).map((movie) => (
@@ -88,7 +104,8 @@ const Home = () => {
                 title={movie.title}
                 posterPath={movie.poster_path}
                 releaseDate={movie.release_date}
-              />
+                onAddFavorite={handleAddFavorite}
+              />            
             ))}
           </Box>
         )}
