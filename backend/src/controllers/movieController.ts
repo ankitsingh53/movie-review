@@ -2,28 +2,31 @@ import type { Request, Response } from "express";
 import tmdb from "../configDB/tmdb.js";
 // import type { getPopularMovies } from "../services/movie.service";
 
-export const fetchPopularMovies = async (
-  req: Request,
-  res: Response
-) => {
+export const fetchPopularMovies = async (req: Request, res: Response) => {
   try {
-    const response = await tmdb.get("/movie/popular");
-    const movies = response.data;
-    res.status(200).json(movies);
+    const page = Number(req.query.page) || 1;
+
+    const response = await tmdb.get("/movie/popular", {
+      params: {
+        page,
+      },
+    });
+
+    res.status(200).json(response.data);
   } catch (error) {
     console.error(error);
+
     res.status(500).json({
       message: "Failed to fetch movies",
     });
   }
 };
 
-export const fetchMovieByid = async (req:Request, res: Response)=>{
+export const fetchMovieByid = async (req: Request, res: Response) => {
   try {
-    const {id} = req.params;
+    const { id } = req.params;
     const response = await tmdb.get(`/movie/${id}`);
     res.status(200).json(response.data);
-
   } catch (error) {
     console.error(error);
 
@@ -31,17 +34,14 @@ export const fetchMovieByid = async (req:Request, res: Response)=>{
       success: false,
       message: "Failed to fetch movie details",
     });
-  };
+  }
 };
 
-export const searchMovies = async (
-  req: Request,
-  res: Response
-) => {
+export const searchMovies = async (req: Request, res: Response) => {
   try {
     const { query } = req.query;
-    // console.log("Search Controller Hit");
-     // console.log(req.query);
+    // console.log("Search Controller");
+    // console.log(req.query);
 
     if (!query || typeof query !== "string") {
       res.status(400).json({
@@ -50,16 +50,12 @@ export const searchMovies = async (
       return;
     }
 
-    // const response = await tmdb.get("/search/movie", {
-    //   params: {
-    //     query,
-    //   },
-    // });
     const response = await tmdb.get(`/search/movie?query=${query}`);
-    if(response.data.results.length<0){
-      res.status(400).json({
-        message: "No result Found"
-      })
+    if (response.data.results.length === 0) {
+      res.status(404).json({
+        message: "No results found",
+      });
+      return;
     }
     res.status(200).json({
       data: response.data.results,
@@ -67,8 +63,8 @@ export const searchMovies = async (
   } catch (error) {
     console.error(error);
 
-  res.status(500).json({     
-   message: "Failed to search movies",
+    res.status(500).json({
+      message: "Failed to search movies",
     });
   }
 };

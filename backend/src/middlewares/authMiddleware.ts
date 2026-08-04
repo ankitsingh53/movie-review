@@ -13,7 +13,7 @@ export const authenticate = (req:AuthRequest, res:Response, next:NextFunction)=>
     try {
         const token = req.cookies.token;
     if(!token){
-       return res.status(401).json({message: "Please login first"})
+       return res.status(401).json({message: "Please login first..."})
     }
 
     const decoded = verifyToken(token);

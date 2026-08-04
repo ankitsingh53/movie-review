@@ -6,7 +6,7 @@ import {
 } from "../services/userService.js";
 import { comparePassword, hashPassword } from "../utils/bcrypt.js";
 import { generateToken } from "../utils/jwt.js";
-import type { AuthRequest } from "../types/authRequest.js";
+import type { AuthRequest } from "../middlewares/authMiddleware.js";
 
 export const getCurrentUser = (req: AuthRequest, res: Response) => {
   res.status(200).json({
@@ -173,7 +173,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
     }
     const hashpass = await hashPassword(password);
 
-    const data = savePassword(getUser.email, hashpass);
+    await savePassword(getUser.email, hashpass);
 
     return res.status(200).json({
       message: "Password Changed Successfully",

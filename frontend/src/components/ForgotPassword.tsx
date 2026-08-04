@@ -12,6 +12,7 @@ import React, { useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { toast } from "react-toastify";
 import api from "../axios/apiService";
+import axios from "axios";
 
 interface FormData {
   email: string;
@@ -23,7 +24,6 @@ interface FormError {
   newPassword?: string;
   confirmPassword?: string;
 }
-
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
@@ -74,13 +74,26 @@ const ForgotPassword = () => {
     e.preventDefault();
     const valid = customeValidate();
     if (!valid) return;
-
     try {
-        await api.post()
-    } catch (error) {
-        
-    }
+      await api.post("/user/forgotpassword", {
+        email: formData.email,
+        password: formData.newPassword
+      });
 
+      setFormData({
+        email: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+      toast.success("Password Changed Successfully");
+      navigate("/");
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data.message, {
+          autoClose: 2000,
+        });
+      }
+    }
   };
 
   return (
@@ -102,7 +115,6 @@ const ForgotPassword = () => {
             maxWidth: 420,
           }}
         >
-         
           <Box component="form" noValidate onSubmit={handleSubmit}>
             <Typography
               sx={{

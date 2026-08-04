@@ -1,26 +1,34 @@
-import {
-  AppBar,
-  Box,
-  Button,
-  Toolbar,
-  Typography,
-} from "@mui/material";
+import { AppBar, Box, Button, Toolbar, Typography } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../axios/apiService";
 import { toast } from "react-toastify";
+import LiveTvIcon from "@mui/icons-material/LiveTv";
+import axios from "axios";
 
-const Navbar = () => {
+interface InputProps {
+  user: {
+    id: string;
+    name: string;
+  }
+}
+
+
+const Navbar = (props:InputProps) => {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
       const response = await api.post("/user/logout");
       navigate("/");
-      toast.success(`${response.data.message}`,{
-        "autoClose": 2000
-      })
-    } catch (error) {
-      
+      toast.success(`${response.data.message}`, {
+        autoClose: 2000,
+      });
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data.message, {
+          autoClose: 2000,
+        });
+      }
     }
   };
 
@@ -36,22 +44,31 @@ const Navbar = () => {
         sx={{
           display: "flex",
           justifyContent: "space-between",
+          textAlign: "center",
         }}
       >
-        {/* Logo */}
-
-        <Typography
-          component={Link}
-          to="/home"
-          variant="h5"
+        <Box
           sx={{
-            textDecoration: "none",
-            color: "white",
-            fontWeight: "bold",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: "10px",
           }}
         >
-          🎬 Movie Review
-        </Typography>
+          <LiveTvIcon sx={{ fontSize: "50px", color: "red" }} />
+          <Typography
+            component={Link}
+            to="/home"
+            variant="h5"
+            sx={{
+              textDecoration: "none",
+              color: "white",
+              fontWeight: "bold",
+            }}
+          >
+            Movie Review
+          </Typography>
+        </Box>
 
         <Box
           sx={{
@@ -67,9 +84,11 @@ const Navbar = () => {
             Favorites
           </Button>
 
-          <Button variant="contained" color="error" onClick={handleLogout}>
+          {!props.user ? (<Button variant="contained" color="primary" onClick={()=>navigate("/")}>
+            Login
+          </Button>):(<Button variant="contained" color="error" onClick={handleLogout}>
             Logout
-          </Button>
+          </Button>)}
         </Box>
       </Toolbar>
     </AppBar>

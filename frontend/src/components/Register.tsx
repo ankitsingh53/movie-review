@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../axios/apiService";
 import { toast } from "react-toastify";
+import LiveTvIcon from '@mui/icons-material/LiveTv';
+import axios from "axios";
 
 type FormData = {
   name: string;
@@ -74,7 +76,7 @@ const Register = () => {
     if(!valid) return;
     try {
          await api.post('/user/register', formData);
-        // console.log(getData);
+
 
         setFormData({
           name: "",
@@ -85,9 +87,9 @@ const Register = () => {
         toast.success("Registered Successfully", {
           autoClose: 2000,
         });
-    } catch (error) {
-        if(error instanceof Error){
-          toast.error(`${error.message}`, {
+    } catch (error:unknown) {
+        if(axios.isAxiosError(error)){
+          toast.error(error.response?.data.message , {
           autoClose: 2000,
         });
         }
@@ -96,7 +98,7 @@ const Register = () => {
   return (
     <Box
       sx={{
-        bgcolor: "#1E1E1E",
+        bgcolor: "#1d1d1d",
         minHeight: "100vh",
         display: "flex",
         justifyContent: "center",
@@ -108,7 +110,7 @@ const Register = () => {
         elevation={5}
         sx={{
           width: 450,
-          bgcolor: "#1E1E1E",
+          bgcolor: "#272727",
           p: 4,
           borderRadius: 3,
         }}
@@ -121,7 +123,7 @@ const Register = () => {
               mb: 1,
             }}
           >
-            🎬
+          <LiveTvIcon sx={{fontSize: '100px', color: 'red'}}/>
           </Typography>
 
           <Typography
@@ -132,7 +134,7 @@ const Register = () => {
               textAlign: "center",
             }}
           >
-            Movie Review
+            Movie Review App
           </Typography>
 
           <Typography

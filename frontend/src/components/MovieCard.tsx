@@ -4,11 +4,9 @@ import {
   Card,
   CardContent,
   CardMedia,
-  IconButton,
   Stack,
   Typography,
 } from "@mui/material";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { useNavigate } from "react-router-dom";
 
 interface MovieCardProps {
@@ -31,7 +29,7 @@ const MovieCard = ({
   return (
     <Card
       sx={{
-        width: 300,
+        width: 350,
         bgcolor: "#1E1E1E",
         color: "white",
         borderRadius: 3,
@@ -42,7 +40,7 @@ const MovieCard = ({
         },
       }}
     > 
-    <Stack>
+    <Stack spacing={2}>
       <CardMedia  component="img" height="370" image={`https://image.tmdb.org/t/p/w500${posterPath}`} alt={title} />
 
       <CardContent>
@@ -70,12 +68,13 @@ const MovieCard = ({
           sx={{
             display: "flex",
             justifyContent: "space-between",
-            alignItems: 'center'
+            alignItems: 'center',
+            marginTop: "40px"
           }}
         >
-          <IconButton color="error" onClick={() => onAddFavorite?.(id)}>
-            <FavoriteBorderIcon />
-          </IconButton>
+          <Button color="success" variant="contained" onClick={() => onAddFavorite?.(id)}>
+            Add to Favorites
+          </Button>
 
           <Button variant="contained" onClick={() => navigate(`/movie/${id}`)}>
             Details

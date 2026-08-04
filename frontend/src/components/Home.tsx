@@ -6,6 +6,8 @@ import api from "../axios/apiService";
 import SearchBar from "./SearchBar";
 import Loader from "./Loader";
 import { toast } from "react-toastify";
+import axios from "axios";
+import Pagination from "@mui/material/Pagination";
 
 interface Movie {
   id: number;
@@ -20,41 +22,63 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [searchResults, setSearchResults] = useState<Movie[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-  
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const response = await api.get("/user/profile");
+      setCurrentUser(response.data.data);
+    };
+
+    fetchUser();
+  }, []);
+
+  console.log(currentUser);
 
   useEffect(() => {
     const fetchMovies = async () => {
       try {
         setLoading(true);
 
-        const response = await api.get("/movies/popular");
+        const response = await api.get(`/movies/popular?page=${page}`);
 
         setMovies(response.data.results);
-      } catch (error) {
-        console.log(error);
+        setTotalPages(response.data.total_pages);
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+          toast.error(error.response?.data.message, {
+            autoClose: 2000,
+          });
+        }
       } finally {
         setLoading(false);
       }
     };
 
     fetchMovies();
-  }, []);
+  }, [page]);
 
   const handleAddFavorite = async (movieId: number) => {
-  try {
-    await api.post("/favorites", {
-      movieId,
-    });
+    try {
+      await api.post("/favorites", {
+        movieId,
+      });
 
-    toast.success("Added to favorites");
-  } catch (error: any) {
-    toast.error(error.response?.data?.message);
-  }
-};
+      toast.success("Added to favorites");
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data.message, {
+          autoClose: 2000,
+        });
+      }
+    }
+  };
 
   return (
     <>
-      <Navbar />
+      <Navbar user={currentUser} />
 
       <Box
         sx={{
@@ -78,26 +102,29 @@ const Home = () => {
           {isSearching ? "Search Results" : "Popular Movies"}
         </Typography>
 
-        {loading ? (
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              mt: 10,
-            }}
-          >
-            <Loader/>
-          </Box>
-        ) : (
-          <Box
-            sx={{
-              display: "flex",
-              flexWrap: "wrap",
-              justifyContent: "center",
-              gap: 10
-            }}
-          >
-            {(isSearching ? searchResults : movies).map((movie) => (
+        {loading && <Loader />}
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "center",
+            gap: 10,
+            minHeight: "1100px",
+          }}
+        >
+          {isSearching && searchResults.length === 0 ? (
+            <Typography
+              sx={{
+                color: "white",
+                textAlign: "center",
+                width: "100%",
+                mt: 5,
+              }}
+            >
+              No movies found.
+            </Typography>
+          ) : (
+            (isSearching ? searchResults : movies).map((movie) => (
               <MovieCard
                 key={movie.id}
                 id={movie.id}
@@ -105,9 +132,35 @@ const Home = () => {
                 posterPath={movie.poster_path}
                 releaseDate={movie.release_date}
                 onAddFavorite={handleAddFavorite}
-              />            
-            ))}
-          </Box>
+              />
+            ))
+          )}
+        </Box>
+
+        {!isSearching && (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            mt: 5,
+          }}
+        >
+          <Pagination
+            page={page}
+            count={Math.min(totalPages, 20)}
+            siblingCount={1}
+            boundaryCount={1}
+            showFirstButton
+            showLastButton
+            color="primary"
+            onChange={(_, value) => setPage(value)}
+            sx={{
+              "& .MuiPaginationItem-root": {
+                color: "white",
+              },
+            }}
+          />
+        </Box>
         )}
       </Box>
     </>

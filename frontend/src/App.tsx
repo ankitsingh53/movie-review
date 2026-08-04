@@ -6,6 +6,7 @@ import Register from "./components/Register";
 import { ToastContainer } from "react-toastify";
 import ForgotPassword from "./components/ForgotPassword";
 import Favorites from "./components/Favorites";
+import NoPageFound from "./components/NoPageFound";
 
 // import MovieDetails from "./components/MovieDetails";
 // import Favorites from "./components/Favorites";
@@ -21,6 +22,8 @@ const App = () => {
         <Route path="/home" element={<Home/>} />
         <Route path="/movie/:id" element={<MovieDetails />} />
         <Route path="/favorites" element={<Favorites/>} />
+        <Route path="*" element={<NoPageFound/>} />
+
 
       </Routes>
     </BrowserRouter>

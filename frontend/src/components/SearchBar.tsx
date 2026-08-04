@@ -1,8 +1,10 @@
 
 import { Box, Button, TextField } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import api from "../axios/apiService";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 interface NavbarProps {
   setSearchResults: React.Dispatch<React.SetStateAction<any[]>>;
@@ -12,10 +14,11 @@ interface NavbarProps {
 const SearchBar = ({ setSearchResults, setIsSearching }: NavbarProps) => {
   const [query, setQuery] = useState("");
 
-  const handleChange = (e)=>{
-    setQuery(e.target.value)
-    setIsSearching(false);
-  }
+  const handleChange = (
+  e: React.ChangeEvent<HTMLInputElement>
+) => {
+  setQuery(e.target.value);
+};
 
   const handleSearch = async () => {
     if (!query.trim() || !query) {
@@ -29,17 +32,36 @@ const SearchBar = ({ setSearchResults, setIsSearching }: NavbarProps) => {
 
       setSearchResults(response.data.data);
       setIsSearching(true);
-    } catch (error) {
-      console.error(error);
-    }
+    } catch (error: unknown) {
+  if (axios.isAxiosError(error)) {
+    setSearchResults([]);
+    setIsSearching(true);
+
+    toast.error(error.response?.data.message, {
+      autoClose: 2000,
+    });
+  }
+}
   };
+  useEffect(() => {
+  const timer = setTimeout(() => {
+    if (query.trim()) {
+      handleSearch();
+    } else {
+      setSearchResults([]);
+      setIsSearching(false);
+    }
+  }, 500);
+
+  return () => clearTimeout(timer);
+}, [query]);
 
   return (
     <Box
       sx={{
         display: "flex",
-        gap: 2,
         mb: 4,
+        gap: 2
       }}
     >
       <TextField
@@ -54,7 +76,8 @@ const SearchBar = ({ setSearchResults, setIsSearching }: NavbarProps) => {
         }}
         sx={{
           bgcolor: "white",
-          borderRadius: 1,
+          borderRadius: 5,
+          border: 'none',
         }}
       />
 
@@ -62,6 +85,7 @@ const SearchBar = ({ setSearchResults, setIsSearching }: NavbarProps) => {
         variant="contained"
         startIcon={<SearchIcon />}
         onClick={handleSearch}
+        sx={{borderRadius: 3, marginRight: '20px', border: 'none'}}
       >
         Search
       </Button>

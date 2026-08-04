@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../axios/apiService";
 import { toast } from "react-toastify";
+import LiveTvIcon from '@mui/icons-material/LiveTv';
+import { isAxiosError } from "axios";
 
 type FormData = {
   email: string;
@@ -59,8 +61,9 @@ const Register = () => {
     const valid = customeValidate();
     if(!valid) return;
     try {
-         await api.post('/user/login', formData);
-        // console.log(getData);
+        const data = await api.post('/user/login', formData);
+        
+        console.log(data)
 
         setFormData({
           email: "",
@@ -70,9 +73,9 @@ const Register = () => {
         toast.success("Login Successfully", {
           autoClose: 2000,
         });
-    } catch (error) {
-        if(error instanceof Error){
-          toast.error(`${error.message}`, {
+    } catch (error:unknown) {
+        if(isAxiosError(error)){
+          toast.error(error.response?.data.message , {
           autoClose: 2000,
         });
         }
@@ -81,7 +84,7 @@ const Register = () => {
   return (
     <Box
       sx={{
-        bgcolor: "#1E1E1E",
+        bgcolor: "#1d1d1d",
         minHeight: "100vh",
         display: "flex",
         justifyContent: "center",
@@ -93,7 +96,7 @@ const Register = () => {
         elevation={5}
         sx={{
           width: 450,
-          bgcolor: "#1E1E1E",
+          bgcolor: "#272727",
           p: 4,
           borderRadius: 3,
         }}
@@ -106,7 +109,7 @@ const Register = () => {
               mb: 1,
             }}
           >
-            🎬
+          <LiveTvIcon sx={{fontSize: '100px', color: 'red'}}/>
           </Typography>
 
           <Typography
@@ -117,7 +120,7 @@ const Register = () => {
               textAlign: "center",
             }}
           >
-            Movie Review
+            Movie Review App
           </Typography>
 
           <Typography
@@ -210,21 +213,13 @@ const Register = () => {
               </Typography>
             )}
 
-            {/* <Box
+            <Box
               sx={{
                 display: "flex",
-                justifyContent: "space-between",
+                justifyContent: "flex-end",
                 mt: 2,
               }}
             >
-              <Link
-                component="button"
-                underline="hover"
-                onClick={() => navigate("/register")}
-              >
-                Register
-              </Link>
-
               <Link
                 component="button"
                 underline="hover"
@@ -232,7 +227,7 @@ const Register = () => {
               >
                 Forgot Password?
               </Link>
-            </Box> */}
+            </Box>
 
           <Button
             fullWidth
@@ -257,9 +252,9 @@ const Register = () => {
             color: 'white'
           }}
         >
-          New User ! {" "}
+          Don't have an account ? {" "}
           <Link component="button" onClick={() => navigate("/register")}>
-            Create an account.
+            Sign Up
           </Link>
         </Typography>
 
