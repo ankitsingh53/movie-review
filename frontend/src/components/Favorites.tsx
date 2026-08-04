@@ -75,6 +75,7 @@ const Favorites = () => {
         console.log(error);
       }
     };
+    
     fetchUser();
     fetchFavorites();
   }, []);

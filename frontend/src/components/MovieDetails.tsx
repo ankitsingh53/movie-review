@@ -164,8 +164,6 @@ const MovieDetails = () => {
           color: "white",
         }}
       >
-        {/* Hero Section */}
-
         <Box
           sx={{
             position: "relative",
@@ -173,8 +171,6 @@ const MovieDetails = () => {
             overflow: "hidden",
           }}
         >
-          {/* Background */}
-
           <Box
             sx={{
               position: "absolute",
@@ -183,12 +179,10 @@ const MovieDetails = () => {
               backgroundSize: "cover",
               backgroundPosition: "center",
               filter: "blur(4px)",
-transform: "scale(1.05)",
-opacity: 0.55,
+              transform: "scale(1.05)",
+              opacity: 0.6,
             }}
           />
-
-          {/* Dark Overlay */}
 
           <Box
             sx={{
@@ -198,8 +192,6 @@ opacity: 0.55,
                 "linear-gradient(to right, rgba(18,18,18,.95) 30%, rgba(18,18,18,.75) 70%, rgba(18,18,18,.95) 100%)",
             }}
           />
-
-          {/* Movie Info */}
 
           <Stack
             direction={{ xs: "column", md: "row" }}
@@ -222,8 +214,8 @@ opacity: 0.55,
               }}
             />
 
-            <Box flex={1}>
-              <Typography variant="h3" fontWeight="bold" gutterBottom>
+            <Box sx={{ flex: 1 }}>
+              <Typography variant="h3" sx={{ fontWeight: "bold" }} gutterBottom>
                 {movie?.title}
               </Typography>
 
@@ -237,17 +229,17 @@ opacity: 0.55,
                 ⭐ {movie?.vote_average?.toFixed(1)} / 10
               </Typography>
 
-              <Typography mb={1}>
+              <Typography sx={{ mb: 1 }}>
                 <strong>Release Date :</strong>{" "}
                 <span style={{ color: "#BDBDBD" }}>{movie?.release_date}</span>
               </Typography>
 
-              <Typography mb={1}>
+              <Typography sx={{ mb: 1 }}>
                 <strong>Runtime :</strong>{" "}
                 <span style={{ color: "#BDBDBD" }}>{movie?.runtime} min</span>
               </Typography>
 
-              <Typography mb={3}>
+              <Typography sx={{ mb: 1 }}>
                 <strong>Genres :</strong>{" "}
                 <span style={{ color: "#BDBDBD" }}>
                   {movie?.genres?.map((g) => g.name).join(", ")}
@@ -342,8 +334,6 @@ opacity: 0.55,
                   overflow: "hidden",
                 }}
               >
-                {/* Header */}
-
                 <Box
                   sx={{
                     display: "flex",
@@ -353,7 +343,11 @@ opacity: 0.55,
                     borderBottom: "1px solid #303030",
                   }}
                 >
-                  <Stack direction="row" spacing={2} alignItems="center">
+                  <Stack
+                    direction="row"
+                    spacing={2}
+                    sx={{ alignItems: "center" }}
+                  >
                     <Avatar
                       sx={{
                         bgcolor: "#1976d2",
@@ -419,9 +413,7 @@ opacity: 0.55,
                   )}
                 </Box>
 
-                {/* Body */}
-
-                <Box p={3}>
+                <Box sx={{ p: 3 }}>
                   {editingReviewId === review.id ? (
                     <>
                       <TextField
@@ -438,7 +430,7 @@ opacity: 0.55,
                         }}
                       />
 
-                      <Stack direction="row" spacing={2} mt={3}>
+                      <Stack direction="row" spacing={2} sx={{ mt: 3 }}>
                         <Button variant="contained" onClick={handleUpdate}>
                           Save
                         </Button>

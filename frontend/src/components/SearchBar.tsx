@@ -28,7 +28,7 @@ const SearchBar = ({ setSearchResults, setIsSearching }: NavbarProps) => {
 
     try {
       const response = await api.get(`/movies/search?query=${query}`);
-      console.log(response.data.data)
+      // console.log(response.data.data)
 
       setSearchResults(response.data.data);
       setIsSearching(true);
