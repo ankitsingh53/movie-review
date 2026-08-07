@@ -29,9 +29,14 @@ export const addReview = async (
       message: "Review added successfully",
       data: review,
     });
-  } catch (error: any) {
-    res.status(error.statusCode || 500).json({
-      message: error.message || "Internal Server Error",
+  } catch (error: unknown) {
+    const err = error as {
+      statusCode?: number;
+      message?: string;
+    };
+
+    res.status(err.statusCode ?? 500).json({
+      message: err.message ?? "Internal Server Error",
     });
   }
 };
@@ -61,9 +66,14 @@ export const updateReview = async (
       message: "Review updated successfully",
       data: review,
     });
-  } catch (error: any) {
-    res.status(error.statusCode || 500).json({
-      message: error.message || "Internal Server Error",
+  } catch (error: unknown) {
+    const err = error as {
+      statusCode?: number;
+      message?: string;
+    };
+
+    res.status(err.statusCode ?? 500).json({
+      message: err.message ?? "Internal Server Error",
     });
   }
 };
@@ -118,9 +128,14 @@ export const deleteReview = async (
     res.status(200).json({
       message: "Review deleted successfully",
     });
-  } catch (error: any) {
-    res.status(error.statusCode || 500).json({
-      message: error.message || "Internal Server Error",
+  } catch (error: unknown) {
+    const err = error as {
+      statusCode?: number;
+      message?: string;
+    };
+
+    res.status(err.statusCode ?? 500).json({
+      message: err.message ?? "Internal Server Error",
     });
   }
 };

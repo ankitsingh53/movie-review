@@ -16,13 +16,17 @@ interface Movie {
   vote_average: number;
   release_date: string;
 }
+interface User {
+  id: string;
+  name: string;
+}
 
 const Home = () => {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchResults, setSearchResults] = useState<Movie[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -138,29 +142,29 @@ const Home = () => {
         </Box>
 
         {!isSearching && (
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            mt: 5,
-          }}
-        >
-          <Pagination
-            page={page}
-            count={Math.min(totalPages, 20)}
-            siblingCount={1}
-            boundaryCount={1}
-            showFirstButton
-            showLastButton
-            color="primary"
-            onChange={(_, value) => setPage(value)}
+          <Box
             sx={{
-              "& .MuiPaginationItem-root": {
-                color: "white",
-              },
+              display: "flex",
+              justifyContent: "center",
+              mt: 5,
             }}
-          />
-        </Box>
+          >
+            <Pagination
+              page={page}
+              count={Math.min(totalPages, 20)}
+              siblingCount={1}
+              boundaryCount={1}
+              showFirstButton
+              showLastButton
+              color="primary"
+              onChange={(_, value) => setPage(value)}
+              sx={{
+                "& .MuiPaginationItem-root": {
+                  color: "white",
+                },
+              }}
+            />
+          </Box>
         )}
       </Box>
     </>

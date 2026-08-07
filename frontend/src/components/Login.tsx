@@ -1,10 +1,19 @@
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { Box, Button, Paper, TextField, Typography, Link, InputAdornment, IconButton } from "@mui/material";
+import {
+  Box,
+  Button,
+  Paper,
+  TextField,
+  Typography,
+  Link,
+  InputAdornment,
+  IconButton,
+} from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../axios/apiService";
 import { toast } from "react-toastify";
-import LiveTvIcon from '@mui/icons-material/LiveTv';
+import LiveTvIcon from "@mui/icons-material/LiveTv";
 import { isAxiosError } from "axios";
 
 type FormData = {
@@ -19,17 +28,17 @@ interface FormErrors {
 
 const Register = () => {
   const navigate = useNavigate();
-    const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<FormData>({
     email: "",
     password: "",
   });
-   const [showCurrent, setShowCurrent] = useState(false);
-   const [errors, setErrors] = useState<FormErrors>({})
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [errors, setErrors] = useState<FormErrors>({});
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>)=>{
-    setFormData({...formData, [e.target.name]: e.target.value})
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
     setErrors({ ...errors, [e.target.name]: "" });
-  }
+  };
 
   const customeValidate = () => {
     const formErrors: FormErrors = {};
@@ -37,14 +46,14 @@ const Register = () => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{3,}$/;
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{4,}$/;
 
-    if (!formData.email.trim() || !formData.email ) {
+    if (!formData.email.trim() || !formData.email) {
       formErrors.email = "Email is mandatory";
       isValid = false;
     } else if (!emailRegex.test(formData.email)) {
       formErrors.email = "Enter valid email address and must include @";
       isValid = false;
     }
-    if (!formData.password.trim() || !formData.password ) {
+    if (!formData.password.trim() || !formData.password) {
       formErrors.password = "Password is mandatory";
       isValid = false;
     } else if (!passwordRegex.test(formData.password)) {
@@ -56,31 +65,31 @@ const Register = () => {
     return isValid;
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>)=>{
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const valid = customeValidate();
-    if(!valid) return;
+    if (!valid) return;
     try {
-        const data = await api.post('/user/login', formData);
-        
-        console.log(data)
+      const data = await api.post("/user/login", formData);
 
-        setFormData({
-          email: "",
-          password: "",
-        });
-        navigate('/home')
-        toast.success("Login Successfully", {
+      console.log(data);
+
+      setFormData({
+        email: "",
+        password: "",
+      });
+      navigate("/home");
+      toast.success("Login Successfully", {
+        autoClose: 2000,
+      });
+    } catch (error: unknown) {
+      if (isAxiosError(error)) {
+        toast.error(error.response?.data.message, {
           autoClose: 2000,
         });
-    } catch (error:unknown) {
-        if(isAxiosError(error)){
-          toast.error(error.response?.data.message , {
-          autoClose: 2000,
-        });
-        }
+      }
     }
-  }
+  };
   return (
     <Box
       sx={{
@@ -101,7 +110,12 @@ const Register = () => {
           borderRadius: 3,
         }}
       >
-        <Box component="form" noValidate autoComplete="On" onSubmit={handleSubmit}>
+        <Box
+          component="form"
+          noValidate
+          autoComplete="On"
+          onSubmit={handleSubmit}
+        >
           <Typography
             sx={{
               fontSize: 45,
@@ -109,7 +123,7 @@ const Register = () => {
               mb: 1,
             }}
           >
-          <LiveTvIcon sx={{fontSize: '100px', color: 'red'}}/>
+            <LiveTvIcon sx={{ fontSize: "100px", color: "red" }} />
           </Typography>
 
           <Typography
@@ -156,14 +170,14 @@ const Register = () => {
             }}
           />
           {errors && (
-              <Typography
-                variant="overline"
-                gutterBottom
-                sx={{ display: "block", color: "#FF6B6B"  }}
-              >
-                {errors.email}
-              </Typography>
-            )}
+            <Typography
+              variant="overline"
+              gutterBottom
+              sx={{ display: "block", color: "#FF6B6B" }}
+            >
+              {errors.email}
+            </Typography>
+          )}
 
           <Typography
             sx={{
@@ -175,59 +189,59 @@ const Register = () => {
           </Typography>
 
           <TextField
-              fullWidth
-              type={showCurrent ? "text" : "password"}
-              margin="normal"
-              name="password"
-              onChange={handleChange}
-              value={formData.password}
-              autoComplete="on"
-              placeholder="Enter your password"
-              sx={{
+            fullWidth
+            type={showCurrent ? "text" : "password"}
+            margin="normal"
+            name="password"
+            onChange={handleChange}
+            value={formData.password}
+            autoComplete="on"
+            placeholder="Enter your password"
+            sx={{
               mb: 3,
               bgcolor: "#ececec",
               borderRadius: 1,
             }}
-              slotProps={{
-                input: {
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={() => setShowCurrent(!showCurrent)}
-                        edge="end"
-                      >
-                        {showCurrent ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                },
-              }}
-            />
-            {errors && (
-              <Typography
-                variant="overline"
-                gutterBottom
-                sx={{ display: "block", color: "#FF6B6B"  }}
-              >
-                {errors.password}
-              </Typography>
-            )}
-
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "flex-end",
-                mt: 2,
-              }}
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowCurrent(!showCurrent)}
+                      edge="end"
+                    >
+                      {showCurrent ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
+          {errors && (
+            <Typography
+              variant="overline"
+              gutterBottom
+              sx={{ display: "block", color: "#FF6B6B" }}
             >
-              <Link
-                component="button"
-                underline="hover"
-                onClick={() => navigate("/forgot-password")}
-              >
-                Forgot Password?
-              </Link>
-            </Box>
+              {errors.password}
+            </Typography>
+          )}
+
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              mt: 2,
+            }}
+          >
+            <Link
+              component="button"
+              underline="hover"
+              onClick={() => navigate("/forgot-password")}
+            >
+              Forgot Password?
+            </Link>
+          </Box>
 
           <Button
             fullWidth
@@ -238,7 +252,7 @@ const Register = () => {
               py: 1.5,
               fontWeight: "bold",
               borderRadius: 2,
-              marginTop: '40px'
+              marginTop: "40px",
             }}
           >
             Login
@@ -249,10 +263,10 @@ const Register = () => {
           sx={{
             textAlign: "center",
             mt: 3,
-            color: 'white'
+            color: "white",
           }}
         >
-          Don't have an account ? {" "}
+          Don't have an account ?{" "}
           <Link component="button" onClick={() => navigate("/register")}>
             Sign Up
           </Link>

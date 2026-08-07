@@ -1,6 +1,5 @@
 import type { Request, Response } from "express";
 import tmdb from "../configDB/tmdb.js";
-// import type { getPopularMovies } from "../services/movie.service";
 
 export const fetchPopularMovies = async (req: Request, res: Response) => {
   try {
@@ -40,8 +39,6 @@ export const fetchMovieByid = async (req: Request, res: Response) => {
 export const searchMovies = async (req: Request, res: Response) => {
   try {
     const { query } = req.query;
-    // console.log("Search Controller");
-    // console.log(req.query);
 
     if (!query || typeof query !== "string") {
       res.status(400).json({

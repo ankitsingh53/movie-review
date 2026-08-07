@@ -241,7 +241,7 @@ const MovieDetails = () => {
 
               <Typography sx={{ mb: 1 }}>
                 <strong>Genres :</strong>{" "}
-                <span style={{ color: "#BDBDBD" }}>
+                <span style={{ color: "#b8b8b8" }}>
                   {movie?.genres?.map((g) => g.name).join(", ")}
                 </span>
               </Typography>

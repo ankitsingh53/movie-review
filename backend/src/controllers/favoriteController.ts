@@ -47,10 +47,16 @@ export const getFavorites = async (
       message: "Favorites fetched successfully",
       data: favorites,
     });
-  } catch (error: any) {
-    res.status(error.statusCode || 500).json({
-      message: error.message || "Internal Server Error",
-    });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      res.status(500).json({
+        message: error.message,
+      });
+    } else {
+      res.status(500).json({
+        message: "Internal Server Error",
+      });
+    }
   }
 };
 
@@ -73,9 +79,14 @@ export const removeFavorite = async (
     res.status(200).json({
       message: "Favorite removed successfully",
     });
-  } catch (error: any) {
-    res.status(error.statusCode || 500).json({
-      message: error.message || "Internal Server Error",
+  } catch (error: unknown) {
+    const err = error as {
+      statusCode?: number;
+      message?: string;
+    };
+
+    res.status(err.statusCode ?? 500).json({
+      message: err.message ?? "Internal Server Error",
     });
   }
 };

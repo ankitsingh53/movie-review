@@ -8,9 +8,6 @@ import ForgotPassword from "./components/ForgotPassword";
 import Favorites from "./components/Favorites";
 import NoPageFound from "./components/NoPageFound";
 
-// import MovieDetails from "./components/MovieDetails";
-// import Favorites from "./components/Favorites";
-
 const App = () => {
   return (
     <BrowserRouter>

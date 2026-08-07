@@ -15,10 +15,28 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Loader from "./Loader";
 
+interface Favorite {
+  id: number;
+  movieId: number;
+}
+
+interface Movie {
+  favoriteId: number;
+  movieId: number;
+  id: number;
+  title: string;
+  poster_path: string;
+  release_date: string;
+}
+interface User {
+  id: string;
+  name: string;
+}
+
 const Favorites = () => {
   const navigate = useNavigate();
-  const [favorites, setFavorites] = useState<any[]>([]);
-  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [favorites, setFavorites] = useState<Movie[]>([]);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   const handleRemoveFavorite = async (movieId: number) => {
@@ -45,7 +63,7 @@ const Favorites = () => {
         const response = await api.get("/favorites");
 
         const favoriteMovies = await Promise.all(
-          response.data.data.map(async (favorite: any) => {
+          response.data.data.map(async (favorite: Favorite) => {
             const movie = await api.get(`/movies/${favorite.movieId}`);
 
             return {
@@ -75,7 +93,7 @@ const Favorites = () => {
         console.log(error);
       }
     };
-    
+
     fetchUser();
     fetchFavorites();
   }, []);
@@ -112,15 +130,6 @@ const Favorites = () => {
                 maxWidth: 500,
               }}
             >
-              <Typography
-                sx={{
-                  fontSize: 60,
-                  mb: 2,
-                }}
-              >
-                ❤️
-              </Typography>
-
               <Typography
                 variant="h5"
                 sx={{

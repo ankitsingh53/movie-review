@@ -9,11 +9,10 @@ interface InputProps {
   user: {
     id: string;
     name: string;
-  }
+  } | null;
 }
 
-
-const Navbar = (props:InputProps) => {
+const Navbar = (props: InputProps) => {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -84,11 +83,19 @@ const Navbar = (props:InputProps) => {
             Favorites
           </Button>
 
-          {!props.user ? (<Button variant="contained" color="primary" onClick={()=>navigate("/")}>
-            Login
-          </Button>):(<Button variant="contained" color="error" onClick={handleLogout}>
-            Logout
-          </Button>)}
+          {!props.user ? (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => navigate("/")}
+            >
+              Login
+            </Button>
+          ) : (
+            <Button variant="contained" color="error" onClick={handleLogout}>
+              Logout
+            </Button>
+          )}
         </Box>
       </Toolbar>
     </AppBar>

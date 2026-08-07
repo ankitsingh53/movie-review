@@ -33,9 +33,7 @@ const ReviewForm = ({ movieId, onReviewAdded }: FormProps) => {
       onReviewAdded();
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
-        toast.error(
-          error.response?.data?.message ?? "Something went wrong"
-        );
+        toast.error(error.response?.data?.message ?? "Something went wrong");
       }
     } finally {
       setLoading(false);

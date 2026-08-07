@@ -1,10 +1,19 @@
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { Box, Button, Paper, TextField, Typography, Link, InputAdornment, IconButton } from "@mui/material";
+import {
+  Box,
+  Button,
+  Paper,
+  TextField,
+  Typography,
+  Link,
+  InputAdornment,
+  IconButton,
+} from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../axios/apiService";
 import { toast } from "react-toastify";
-import LiveTvIcon from '@mui/icons-material/LiveTv';
+import LiveTvIcon from "@mui/icons-material/LiveTv";
 import axios from "axios";
 
 type FormData = {
@@ -14,25 +23,25 @@ type FormData = {
 };
 
 interface FormErrors {
-  name?: string,
+  name?: string;
   email?: string;
   password?: string;
 }
 
 const Register = () => {
   const navigate = useNavigate();
-    const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
     password: "",
   });
-   const [showCurrent, setShowCurrent] = useState(false);
-   const [errors, setErrors] = useState<FormErrors>({})
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [errors, setErrors] = useState<FormErrors>({});
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>)=>{
-    setFormData({...formData, [e.target.name]: e.target.value})
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
     setErrors({ ...errors, [e.target.name]: "" });
-  }
+  };
 
   const customeValidate = () => {
     const formErrors: FormErrors = {};
@@ -41,24 +50,24 @@ const Register = () => {
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{4,}$/;
     const stringPattern = /^[A-Za-z\s'-]+$/;
 
-    if (!formData.name.trim() || !formData.name ) {
+    if (!formData.name.trim() || !formData.name) {
       formErrors.name = "Name is required";
       isValid = false;
     } else if (!stringPattern.test(formData.name)) {
       formErrors.name = "Only Characters are allowed";
       isValid = false;
-    }else if (formData.name.length<3) {
+    } else if (formData.name.length < 3) {
       formErrors.name = "Name cannot be less than 3 characters";
       isValid = false;
     }
-    if (!formData.email.trim() || !formData.email ) {
+    if (!formData.email.trim() || !formData.email) {
       formErrors.email = "Email is mandatory";
       isValid = false;
     } else if (!emailRegex.test(formData.email)) {
       formErrors.email = "Enter valid email address and must include @";
       isValid = false;
     }
-    if (!formData.password.trim() || !formData.password ) {
+    if (!formData.password.trim() || !formData.password) {
       formErrors.password = "Password is mandatory";
       isValid = false;
     } else if (!passwordRegex.test(formData.password)) {
@@ -70,31 +79,30 @@ const Register = () => {
     return isValid;
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>)=>{
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const valid = customeValidate();
-    if(!valid) return;
+    if (!valid) return;
     try {
-         await api.post('/user/register', formData);
+      await api.post("/user/register", formData);
 
-
-        setFormData({
-          name: "",
-          email: "",
-          password: "",
-        });
-        navigate('/')
-        toast.success("Registered Successfully", {
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+      });
+      navigate("/");
+      toast.success("Registered Successfully", {
+        autoClose: 2000,
+      });
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data.message, {
           autoClose: 2000,
         });
-    } catch (error:unknown) {
-        if(axios.isAxiosError(error)){
-          toast.error(error.response?.data.message , {
-          autoClose: 2000,
-        });
-        }
+      }
     }
-  }
+  };
   return (
     <Box
       sx={{
@@ -115,7 +123,12 @@ const Register = () => {
           borderRadius: 3,
         }}
       >
-        <Box component="form" noValidate autoComplete="On" onSubmit={handleSubmit}>
+        <Box
+          component="form"
+          noValidate
+          autoComplete="On"
+          onSubmit={handleSubmit}
+        >
           <Typography
             sx={{
               fontSize: 45,
@@ -123,7 +136,7 @@ const Register = () => {
               mb: 1,
             }}
           >
-          <LiveTvIcon sx={{fontSize: '100px', color: 'red'}}/>
+            <LiveTvIcon sx={{ fontSize: "100px", color: "red" }} />
           </Typography>
 
           <Typography
@@ -171,14 +184,14 @@ const Register = () => {
           />
 
           {errors && (
-              <Typography
-                variant="overline"
-                gutterBottom
-                sx={{ display: "block", color: "#FF6B6B" }}
-              >
-                {errors.name}
-              </Typography>
-            )}
+            <Typography
+              variant="overline"
+              gutterBottom
+              sx={{ display: "block", color: "#FF6B6B" }}
+            >
+              {errors.name}
+            </Typography>
+          )}
 
           <Typography
             sx={{
@@ -203,14 +216,14 @@ const Register = () => {
             }}
           />
           {errors && (
-              <Typography
-                variant="overline"
-                gutterBottom
-                sx={{ display: "block", color: "#FF6B6B"  }}
-              >
-                {errors.email}
-              </Typography>
-            )}
+            <Typography
+              variant="overline"
+              gutterBottom
+              sx={{ display: "block", color: "#FF6B6B" }}
+            >
+              {errors.email}
+            </Typography>
+          )}
 
           <Typography
             sx={{
@@ -222,43 +235,43 @@ const Register = () => {
           </Typography>
 
           <TextField
-              fullWidth
-              type={showCurrent ? "text" : "password"}
-              margin="normal"
-              name="password"
-              onChange={handleChange}
-              value={formData.password}
-              autoComplete="on"
-              placeholder="Enter your password"
-              sx={{
+            fullWidth
+            type={showCurrent ? "text" : "password"}
+            margin="normal"
+            name="password"
+            onChange={handleChange}
+            value={formData.password}
+            autoComplete="on"
+            placeholder="Enter your password"
+            sx={{
               mb: 3,
               bgcolor: "#ececec",
               borderRadius: 1,
             }}
-              slotProps={{
-                input: {
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={() => setShowCurrent(!showCurrent)}
-                        edge="end"
-                      >
-                        {showCurrent ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                },
-              }}
-            />
-            {errors && (
-              <Typography
-                variant="overline"
-                gutterBottom
-                sx={{ display: "block", color: "#FF6B6B"  }}
-              >
-                {errors.password}
-              </Typography>
-            )}
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowCurrent(!showCurrent)}
+                      edge="end"
+                    >
+                      {showCurrent ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
+          {errors && (
+            <Typography
+              variant="overline"
+              gutterBottom
+              sx={{ display: "block", color: "#FF6B6B" }}
+            >
+              {errors.password}
+            </Typography>
+          )}
 
           <Button
             fullWidth
@@ -269,7 +282,7 @@ const Register = () => {
               py: 1.5,
               fontWeight: "bold",
               borderRadius: 2,
-              marginTop: '40px'
+              marginTop: "40px",
             }}
           >
             Register
@@ -280,7 +293,7 @@ const Register = () => {
           sx={{
             textAlign: "center",
             mt: 3,
-            color: 'white'
+            color: "white",
           }}
         >
           Already have an account?{" "}
