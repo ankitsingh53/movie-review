@@ -8,8 +8,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsx watch src/server.ts",
-    "build": "tsc",
+    "dev": "tsx src/server.ts",
+    "build": "tsc && echo '--- DIST FILES ---' && find dist -type f",
     "start": "node dist/server.js"
   },
   "dependencies": {
